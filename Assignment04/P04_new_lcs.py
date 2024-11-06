@@ -13,28 +13,43 @@ def solution(test_case):
     Y = ' ' + Y;
     X_len, Y_len = len(X), len(Y);
     dp = [[0 for _ in range(Y_len)] for _ in range(X_len)];
+    tracking_dp = [[0 for _ in range(Y_len)] for _ in range(X_len)];
 
     # 2. lcs 길이 탐색
     for X_i in range(X_len):
         for Y_i in range(Y_len):
             if (X[X_i] == Y[Y_i]):
                 dp[X_i][Y_i] = dp[X_i - 1][Y_i - 1] + 1;
+                tracking_dp[X_i][Y_i] = 1;
+            elif (dp[X_i][Y_i - 1] >= dp[X_i - 1][Y_i]):
+                dp[X_i][Y_i] = dp[X_i][Y_i - 1];
+                tracking_dp[X_i][Y_i] = 2
             else:
-                dp[X_i][Y_i] = max(dp[X_i][Y_i - 1], dp[X_i - 1][Y_i]);
+                dp[X_i][Y_i] = dp[X_i - 1][Y_i];
+                tracking_dp[X_i][Y_i] = 3
     
     # 3. lcs 구하기
     lcs_X, lcs_Y = X_len - 1, Y_len - 1;
     lcs_list = [];
 
-    while(lcs_X >= 0 and lcs_Y >= 0):
-        if (dp[lcs_X][lcs_Y] == dp[lcs_X - 1][lcs_Y]):
+    while (lcs_X > 0 and lcs_Y > 0):
+        if (tracking_dp[lcs_X][lcs_Y] == 3):
             lcs_X -= 1;
-        elif (dp[lcs_X][lcs_Y] == dp[lcs_X][lcs_Y - 1]):
+        elif (tracking_dp[lcs_X][lcs_Y] == 2):
             lcs_Y -= 1;
         else:
             lcs_list.append(X[lcs_X]);
             lcs_X -= 1;
             lcs_Y -= 1;
+    # while (lcs_X > 0 and lcs_Y > 0):
+    #     if (dp[lcs_X][lcs_Y] == dp[lcs_X - 1][lcs_Y]):
+    #         lcs_X -= 1;
+    #     elif (dp[lcs_X][lcs_Y] == dp[lcs_X][lcs_Y - 1]):
+    #         lcs_Y -= 1;
+    #     else:
+    #         lcs_list.append(X[lcs_X]);
+    #         lcs_X -= 1;
+    #         lcs_Y -= 1;
 
     lcs = ''.join(reversed(lcs_list));
     lcs_length = len(lcs);
